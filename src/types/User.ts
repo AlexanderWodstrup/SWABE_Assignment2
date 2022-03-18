@@ -34,13 +34,13 @@ export const User = objectType({
 export const UserQuery = extendType({
   type: "Query",
   definition: (t) => {
-    t.nonNull.list.field("getUsers", {
+    t.nullable.list.field("getUsers", {
       type: "User",
       resolve: (source, args, context) => {
         return context.db.user.findMany();
       },
     });
-    t.field("getUser", {
+    t.nullable.field("getUser", {
       type: "User",
       args: {
         userId: nonNull(intArg()),

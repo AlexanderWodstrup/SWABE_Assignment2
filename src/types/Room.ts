@@ -1,13 +1,8 @@
 import {
   objectType,
   extendType,
-  stringArg,
   nonNull,
-  list,
-  idArg,
   intArg,
-  enumType,
-  arg,
   floatArg,
   booleanArg,
   nullable,
@@ -21,14 +16,41 @@ export const Room = objectType({
     t.nonNull.int("numOfBeds");
     t.nonNull.float("pricePerNight");
     t.nonNull.boolean("oceanView");
-    t.nonNull.boolean("miniBar");
+    t.nonNull.boolean("minibar");
+  },
+});
+
+export const RoomQuery = extendType({
+  type: "Query",
+  definition: (t) => {
+    t.nullable.list.field("getRooms", {
+      type: "Room",
+      resolve: (source, args, context) => {
+        return context.db.room.findMany();
+      },
+    });
+    t.nullable.field("getRoom", {
+      type: "Room",
+      args: {
+        id: nonNull(intArg()),
+      },
+      resolve: (source, args, context) => {
+        let room = context.db.room.findFirst({ where: { id: args.id } });
+
+        if (!room) {
+          throw new Error("Could not find room with id " + args.id);
+        }
+
+        return room;
+      },
+    });
   },
 });
 
 export const RoomMutation = extendType({
   type: "Mutation",
   definition(t) {
-    t.nonNull.field("createRoom", {
+    t.nullable.field("createRoom", {
       type: "Room",
       args: {
         roomNumber: nonNull(intArg()),
@@ -72,6 +94,15 @@ export const RoomMutation = extendType({
           where: { id: args.id },
           data: tempRoom,
         });
+      },
+    });
+    t.nonNull.field("deleteRoom", {
+      type: "Room",
+      args: {
+        id: nonNull(intArg()),
+      },
+      resolve(source, args, context) {
+        return context.db.room.delete({ where: { id: args.id } });
       },
     });
   },

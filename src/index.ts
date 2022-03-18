@@ -2,7 +2,7 @@ import { makeSchema } from "nexus";
 import { join } from "path";
 import * as types from "./types";
 import { ApolloServer } from "apollo-server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "./lib/prismaLib";
 
 export const server = new ApolloServer({
   schema: makeSchema({
@@ -18,7 +18,7 @@ export const server = new ApolloServer({
   }),
   context() {
     return {
-      db: new PrismaClient(),
+      db: prisma,
     };
   },
 });
