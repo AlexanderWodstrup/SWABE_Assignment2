@@ -6,7 +6,18 @@ import {
   list,
   idArg,
   intArg,
+  enumType,
+  arg,
 } from "nexus";
+
+export const Role = enumType({
+  name: "role",
+  members: {
+    MANAGER: "MANAGER",
+    CLERK: "CLERK",
+    GUEST: "GUEST",
+  },
+});
 
 export const User = objectType({
   name: "User",
@@ -15,6 +26,7 @@ export const User = objectType({
     t.nonNull.string("firstName");
     t.nonNull.string("lastName");
     t.nonNull.string("email");
+    t.nonNull.field("role", { type: Role });
   },
 });
 
@@ -24,7 +36,7 @@ export const UserQuery = extendType({
     t.nonNull.list.field("getUsers", {
       type: "User",
       resolve: (source, args, context) => {
-        return context.db.user.findMany({ take: 10 });
+        return context.db.user.findMany();
       },
     });
     t.field("getUser", {
@@ -54,15 +66,48 @@ export const UserMutation = extendType({
         firstName: nonNull(stringArg()),
         lastName: nonNull(stringArg()),
         email: nonNull(stringArg()),
+        role: nonNull(Role),
       },
-      resolve(_root, args, ctx) {
+      resolve(_root, args, context) {
         const tempUser = {
           firstName: args.firstName,
           lastName: args.lastName,
           email: args.email,
+          role: args.role,
         };
 
-        return ctx.db.user.create({ data: tempUser });
+        return context.db.user.create({ data: tempUser });
+      },
+    });
+    t.nonNull.field("updateUser", {
+      type: "User",
+      args: {
+        id: nonNull(intArg()),
+        firstName: nonNull(stringArg()),
+        lastName: nonNull(stringArg()),
+        email: nonNull(stringArg()),
+        role: nonNull(Role),
+      },
+      resolve(source, args, context) {
+        const updateUser = {
+          firstName: args.firstName,
+          lastName: args.lastName,
+          email: args.email,
+          role: args.role,
+        };
+        return context.db.user.update({
+          where: { id: args.id },
+          data: updateUser,
+        });
+      },
+    });
+    t.nonNull.field("deleteUser", {
+      type: "User",
+      args: {
+        id: nonNull(intArg()),
+      },
+      resolve(source, args, context) {
+        return context.db.User.delete({ where: { id: args.id } });
       },
     });
   },

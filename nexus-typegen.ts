@@ -17,6 +17,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
+  role: "CLERK" | "GUEST" | "MANAGER"
 }
 
 export interface NexusGenScalars {
@@ -35,6 +36,7 @@ export interface NexusGenObjects {
     firstName: string; // String!
     id: number; // Int!
     lastName: string; // String!
+    role: NexusGenEnums['role']; // role!
   }
 }
 
@@ -46,11 +48,13 @@ export interface NexusGenUnions {
 
 export type NexusGenRootTypes = NexusGenObjects
 
-export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
+export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
   Mutation: { // field return type
     createUser: NexusGenRootTypes['User']; // User!
+    deleteUser: NexusGenRootTypes['User']; // User!
+    updateUser: NexusGenRootTypes['User']; // User!
   }
   Query: { // field return type
     getUser: NexusGenRootTypes['User'] | null; // User
@@ -61,12 +65,15 @@ export interface NexusGenFieldTypes {
     firstName: string; // String!
     id: number; // Int!
     lastName: string; // String!
+    role: NexusGenEnums['role']; // role!
   }
 }
 
 export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     createUser: 'User'
+    deleteUser: 'User'
+    updateUser: 'User'
   }
   Query: { // field return type name
     getUser: 'User'
@@ -77,6 +84,7 @@ export interface NexusGenFieldTypeNames {
     firstName: 'String'
     id: 'Int'
     lastName: 'String'
+    role: 'role'
   }
 }
 
@@ -86,6 +94,17 @@ export interface NexusGenArgTypes {
       email: string; // String!
       firstName: string; // String!
       lastName: string; // String!
+      role: NexusGenEnums['role']; // role!
+    }
+    deleteUser: { // args
+      id: number; // Int!
+    }
+    updateUser: { // args
+      email: string; // String!
+      firstName: string; // String!
+      id: number; // Int!
+      lastName: string; // String!
+      role: NexusGenEnums['role']; // role!
     }
   }
   Query: {
@@ -105,7 +124,7 @@ export type NexusGenObjectNames = keyof NexusGenObjects;
 
 export type NexusGenInputNames = never;
 
-export type NexusGenEnumNames = never;
+export type NexusGenEnumNames = keyof NexusGenEnums;
 
 export type NexusGenInterfaceNames = never;
 
