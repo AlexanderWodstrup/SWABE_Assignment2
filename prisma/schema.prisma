@@ -25,11 +25,12 @@ model User {
 
 model Room {
   id Int @id @default(autoincrement())
-  rommNumber Int @unique
+  roomNumber Int @unique
   numOfBeds Int
   pricePerNight Float
   oceanView Boolean
   minibar Boolean
+  reservations Reservation[]
   @@map(name: "room")
 } 
 
@@ -37,6 +38,8 @@ model Reservation {
   id  Int @id @default(autoincrement())
   user User @relation(fields: [userId], references: [id]) 
   userId Int 
+  roomId Int
+  room Room @relation(fields: [roomId],references: [id])
   dateFrom DateTime
   dateTo DateTime
   @@map(name: "reservation")

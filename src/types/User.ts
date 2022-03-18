@@ -8,6 +8,7 @@ import {
   intArg,
   enumType,
   arg,
+  nullable,
 } from "nexus";
 
 export const Role = enumType({
@@ -83,10 +84,10 @@ export const UserMutation = extendType({
       type: "User",
       args: {
         id: nonNull(intArg()),
-        firstName: nonNull(stringArg()),
-        lastName: nonNull(stringArg()),
-        email: nonNull(stringArg()),
-        role: nonNull(Role),
+        firstName: nullable(stringArg()),
+        lastName: nullable(stringArg()),
+        email: nullable(stringArg()),
+        role: nullable(Role),
       },
       resolve(source, args, context) {
         const updateUser = {

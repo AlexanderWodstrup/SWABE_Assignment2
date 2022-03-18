@@ -3,14 +3,25 @@
 
 
 type Mutation {
+  createRoom(minibar: Boolean!, numOfBeds: Int!, oceanView: Boolean!, pricePerNight: Float!, roomNumber: Int!): Room!
   createUser(email: String!, firstName: String!, lastName: String!, role: role!): User!
   deleteUser(id: Int!): User!
-  updateUser(email: String!, firstName: String!, id: Int!, lastName: String!, role: role!): User!
+  updateRoom(id: Int!, minibar: Boolean, numOfBeds: Int, oceanView: Boolean, pricePerNight: Float, roomNumber: Int): Room!
+  updateUser(email: String, firstName: String, id: Int!, lastName: String, role: role): User!
 }
 
 type Query {
   getUser(userId: Int!): User
   getUsers: [User]!
+}
+
+type Room {
+  id: Int!
+  miniBar: Boolean!
+  numOfBeds: Int!
+  oceanView: Boolean!
+  pricePerNight: Float!
+  roomNumber: Int!
 }
 
 type User {

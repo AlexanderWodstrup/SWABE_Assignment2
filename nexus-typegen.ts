@@ -31,6 +31,14 @@ export interface NexusGenScalars {
 export interface NexusGenObjects {
   Mutation: {};
   Query: {};
+  Room: { // root type
+    id: number; // Int!
+    miniBar: boolean; // Boolean!
+    numOfBeds: number; // Int!
+    oceanView: boolean; // Boolean!
+    pricePerNight: number; // Float!
+    roomNumber: number; // Int!
+  }
   User: { // root type
     email: string; // String!
     firstName: string; // String!
@@ -52,13 +60,23 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnu
 
 export interface NexusGenFieldTypes {
   Mutation: { // field return type
+    createRoom: NexusGenRootTypes['Room']; // Room!
     createUser: NexusGenRootTypes['User']; // User!
     deleteUser: NexusGenRootTypes['User']; // User!
+    updateRoom: NexusGenRootTypes['Room']; // Room!
     updateUser: NexusGenRootTypes['User']; // User!
   }
   Query: { // field return type
     getUser: NexusGenRootTypes['User'] | null; // User
     getUsers: Array<NexusGenRootTypes['User'] | null>; // [User]!
+  }
+  Room: { // field return type
+    id: number; // Int!
+    miniBar: boolean; // Boolean!
+    numOfBeds: number; // Int!
+    oceanView: boolean; // Boolean!
+    pricePerNight: number; // Float!
+    roomNumber: number; // Int!
   }
   User: { // field return type
     email: string; // String!
@@ -71,13 +89,23 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
+    createRoom: 'Room'
     createUser: 'User'
     deleteUser: 'User'
+    updateRoom: 'Room'
     updateUser: 'User'
   }
   Query: { // field return type name
     getUser: 'User'
     getUsers: 'User'
+  }
+  Room: { // field return type name
+    id: 'Int'
+    miniBar: 'Boolean'
+    numOfBeds: 'Int'
+    oceanView: 'Boolean'
+    pricePerNight: 'Float'
+    roomNumber: 'Int'
   }
   User: { // field return type name
     email: 'String'
@@ -90,6 +118,13 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    createRoom: { // args
+      minibar: boolean; // Boolean!
+      numOfBeds: number; // Int!
+      oceanView: boolean; // Boolean!
+      pricePerNight: number; // Float!
+      roomNumber: number; // Int!
+    }
     createUser: { // args
       email: string; // String!
       firstName: string; // String!
@@ -99,12 +134,20 @@ export interface NexusGenArgTypes {
     deleteUser: { // args
       id: number; // Int!
     }
-    updateUser: { // args
-      email: string; // String!
-      firstName: string; // String!
+    updateRoom: { // args
       id: number; // Int!
-      lastName: string; // String!
-      role: NexusGenEnums['role']; // role!
+      minibar?: boolean | null; // Boolean
+      numOfBeds?: number | null; // Int
+      oceanView?: boolean | null; // Boolean
+      pricePerNight?: number | null; // Float
+      roomNumber?: number | null; // Int
+    }
+    updateUser: { // args
+      email?: string | null; // String
+      firstName?: string | null; // String
+      id: number; // Int!
+      lastName?: string | null; // String
+      role?: NexusGenEnums['role'] | null; // role
     }
   }
   Query: {
