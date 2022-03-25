@@ -6,7 +6,9 @@ import {
   floatArg,
   booleanArg,
   nullable,
+  stringArg,
 } from "nexus";
+import { parse } from "date-fns";
 
 export const Reservation = objectType({
   name: "Reservation",
@@ -43,6 +45,32 @@ export const ReservationQuery = extendType({
         }
 
         return reservation;
+      },
+    });
+  },
+});
+
+export const ReservationMutation = extendType({
+  type: "Mutation",
+  definition: (t) => {
+    t.nullable.field("createResevation", {
+      type: "Reservation",
+      args: {
+        userId: nonNull(intArg()),
+        roomId: nonNull(intArg()),
+        dateFrom: nonNull(stringArg()),
+        dateTo: nonNull(stringArg()),
+      },
+      async resolve(source, args, context) {
+        const tempResevation = {
+          dateFrom: parse(args.dateFrom, "dd/MM/yyyy", new Date()),
+          dateTo: parse(args.dateTo, "dd/MM/yyyy", new Date()),
+          roomId: args.roomId,
+          userId: args.userId,
+        };
+
+        console.log(tempResevation);
+        return context.db.reservation.create({ data: tempResevation });
       },
     });
   },

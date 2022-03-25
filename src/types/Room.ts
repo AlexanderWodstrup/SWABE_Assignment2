@@ -7,6 +7,7 @@ import {
   booleanArg,
   nullable,
 } from "nexus";
+import { Reservation } from "./Reservation";
 
 export const Room = objectType({
   name: "Room",
@@ -17,6 +18,7 @@ export const Room = objectType({
     t.nonNull.float("pricePerNight");
     t.nonNull.boolean("oceanView");
     t.nonNull.boolean("minibar");
+    t.nullable.list.field("resevations", { type: Reservation });
   },
 });
 
@@ -26,7 +28,7 @@ export const RoomQuery = extendType({
     t.nullable.list.field("getRooms", {
       type: "Room",
       resolve: (source, args, context) => {
-        return context.db.room.findMany();
+        return context.db.room.findMany({ include: { reservations: true } });
       },
     });
     t.nullable.field("getRoom", {
@@ -35,7 +37,12 @@ export const RoomQuery = extendType({
         id: nonNull(intArg()),
       },
       resolve: (source, args, context) => {
-        let room = context.db.room.findFirst({ where: { id: args.id } });
+        let room = context.db.room.findFirst({
+          where: { id: args.id },
+          include: {
+            reservations: true,
+          },
+        });
 
         if (!room) {
           throw new Error("Could not find room with id " + args.id);

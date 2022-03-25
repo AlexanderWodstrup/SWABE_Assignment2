@@ -44,6 +44,7 @@ export interface NexusGenObjects {
     numOfBeds: number; // Int!
     oceanView: boolean; // Boolean!
     pricePerNight: number; // Float!
+    resevations?: Array<NexusGenRootTypes['Reservation'] | null> | null; // [Reservation]
     roomNumber: number; // Int!
   }
   User: { // root type
@@ -67,6 +68,7 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnu
 
 export interface NexusGenFieldTypes {
   Mutation: { // field return type
+    createResevation: NexusGenRootTypes['Reservation'] | null; // Reservation
     createRoom: NexusGenRootTypes['Room'] | null; // Room
     createUser: NexusGenRootTypes['User']; // User!
     deleteRoom: NexusGenRootTypes['Room']; // Room!
@@ -95,6 +97,7 @@ export interface NexusGenFieldTypes {
     numOfBeds: number; // Int!
     oceanView: boolean; // Boolean!
     pricePerNight: number; // Float!
+    resevations: Array<NexusGenRootTypes['Reservation'] | null> | null; // [Reservation]
     roomNumber: number; // Int!
   }
   User: { // field return type
@@ -108,6 +111,7 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
+    createResevation: 'Reservation'
     createRoom: 'Room'
     createUser: 'User'
     deleteRoom: 'Room'
@@ -136,6 +140,7 @@ export interface NexusGenFieldTypeNames {
     numOfBeds: 'Int'
     oceanView: 'Boolean'
     pricePerNight: 'Float'
+    resevations: 'Reservation'
     roomNumber: 'Int'
   }
   User: { // field return type name
@@ -149,6 +154,12 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    createResevation: { // args
+      dateFrom: string; // String!
+      dateTo: string; // String!
+      roomId: number; // Int!
+      userId: number; // Int!
+    }
     createRoom: { // args
       minibar: boolean; // Boolean!
       numOfBeds: number; // Int!
