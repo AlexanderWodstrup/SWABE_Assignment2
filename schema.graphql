@@ -6,8 +6,10 @@ type Mutation {
   createReservation(dateFrom: String!, dateTo: String!, roomId: Int!, userId: Int!): Reservation
   createRoom(minibar: Boolean!, numOfBeds: Int!, oceanView: Boolean!, pricePerNight: Float!, roomNumber: Int!): Room
   createUser(email: String!, firstName: String!, lastName: String!, role: role!): User!
+  deleteReservation(id: Int!): Reservation!
   deleteRoom(id: Int!): Room!
   deleteUser(id: Int!): User!
+  updateReservation(dateFrom: String, dateTo: String, id: Int!, roomId: Int, userId: Int): Reservation!
   updateRoom(id: Int!, minibar: Boolean, numOfBeds: Int, oceanView: Boolean, pricePerNight: Float, roomNumber: Int): Room!
   updateUser(email: String, firstName: String, id: Int!, lastName: String, role: role): User!
 }

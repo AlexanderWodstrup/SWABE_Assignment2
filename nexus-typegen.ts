@@ -72,8 +72,10 @@ export interface NexusGenFieldTypes {
     createReservation: NexusGenRootTypes['Reservation'] | null; // Reservation
     createRoom: NexusGenRootTypes['Room'] | null; // Room
     createUser: NexusGenRootTypes['User']; // User!
+    deleteReservation: NexusGenRootTypes['Reservation']; // Reservation!
     deleteRoom: NexusGenRootTypes['Room']; // Room!
     deleteUser: NexusGenRootTypes['User']; // User!
+    updateReservation: NexusGenRootTypes['Reservation']; // Reservation!
     updateRoom: NexusGenRootTypes['Room']; // Room!
     updateUser: NexusGenRootTypes['User']; // User!
   }
@@ -116,8 +118,10 @@ export interface NexusGenFieldTypeNames {
     createReservation: 'Reservation'
     createRoom: 'Room'
     createUser: 'User'
+    deleteReservation: 'Reservation'
     deleteRoom: 'Room'
     deleteUser: 'User'
+    updateReservation: 'Reservation'
     updateRoom: 'Room'
     updateUser: 'User'
   }
@@ -176,11 +180,21 @@ export interface NexusGenArgTypes {
       lastName: string; // String!
       role: NexusGenEnums['role']; // role!
     }
+    deleteReservation: { // args
+      id: number; // Int!
+    }
     deleteRoom: { // args
       id: number; // Int!
     }
     deleteUser: { // args
       id: number; // Int!
+    }
+    updateReservation: { // args
+      dateFrom?: string | null; // String
+      dateTo?: string | null; // String
+      id: number; // Int!
+      roomId?: number | null; // Int
+      userId?: number | null; // Int
     }
     updateRoom: { // args
       id: number; // Int!

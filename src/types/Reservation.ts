@@ -8,7 +8,7 @@ import {
   nullable,
   stringArg,
 } from "nexus";
-import { parse } from "date-fns";
+import { format, parse } from "date-fns";
 
 export const Reservation = objectType({
   name: "Reservation",
@@ -26,8 +26,15 @@ export const ReservationQuery = extendType({
   definition: (t) => {
     t.nullable.list.field("getReservations", {
       type: "Reservation",
-      resolve: (source, args, context) => {
-        return context.db.reservation.findMany();
+      resolve: async (source, args, context) => {
+        let reservations = await context.db.reservation.findMany();
+        let formatResevations = reservations;
+
+        formatResevations.map((reservation: any) =>
+          formatResevation(reservation)
+        );
+
+        return formatResevations;
       },
     });
     t.nullable.field("getReservation", {
@@ -35,8 +42,8 @@ export const ReservationQuery = extendType({
       args: {
         id: nonNull(intArg()),
       },
-      resolve: (source, args, context) => {
-        let reservation = context.db.reservation.findFirst({
+      resolve: async (source, args, context) => {
+        let reservation = await context.db.reservation.findFirst({
           where: { id: args.id },
         });
 
@@ -44,7 +51,10 @@ export const ReservationQuery = extendType({
           throw new Error("Could not find room with id " + args.id);
         }
 
-        return reservation;
+        let formatedReservation = reservation;
+        formatResevation(formatedReservation);
+
+        return formatedReservation;
       },
     });
   },
@@ -69,9 +79,7 @@ export const ReservationMutation = extendType({
           userId: args.userId,
         };
 
-        console.log(tempReservation);
-
-        let reservation = context.db.reservation.create({
+        let reservation = await context.db.reservation.create({
           data: tempReservation,
         });
 
@@ -101,8 +109,71 @@ export const ReservationMutation = extendType({
           },
         });
 
-        return reservation;
+        return formatResevation(reservation);
+      },
+    });
+    t.nonNull.field("updateReservation", {
+      type: "Reservation",
+      args: {
+        id: nonNull(intArg()),
+        userId: nullable(intArg()),
+        roomId: nullable(intArg()),
+        dateFrom: nullable(stringArg()),
+        dateTo: nullable(stringArg()),
+      },
+      async resolve(source, args, context) {
+        const tempReservation = {
+          dateFrom:
+            args.dateFrom && parse(args.dateFrom, "dd/MM/yyyy", new Date()),
+          dateTo: args.dateTo && parse(args.dateTo, "dd/MM/yyyy", new Date()),
+          roomId: args.roomId,
+          userId: args.userId,
+        };
+
+        let reservationExist = await context.db.reservation.findFirst({
+          where: { id: args.id },
+        });
+
+        if (!reservationExist) {
+          throw new Error("Reservation not found. id: " + args.id);
+        }
+
+        let reservation = await context.db.reservation.update({
+          where: { id: args.id },
+          data: tempReservation,
+        });
+
+        return formatResevation(reservation);
+      },
+    });
+    t.nonNull.field("deleteReservation", {
+      type: "Reservation",
+      args: {
+        id: nonNull(intArg()),
+      },
+      async resolve(source, args, context) {
+        let reservationExist = await context.db.reservation.findFirst({
+          where: { id: args.id },
+        });
+
+        if (!reservationExist) {
+          throw new Error("Reservation not found. id: " + args.id);
+        }
+
+        let deletedReservation = await context.db.reservation.delete({
+          where: { id: args.id },
+        });
+
+        return formatResevation(deletedReservation);
       },
     });
   },
 });
+
+export function formatResevation(resevation: any) {
+  console.log(resevation);
+  resevation.dateFrom = format(resevation.dateFrom, "dd/MM/yyyy");
+  resevation.dateTo = format(resevation.dateTo, "dd/MM/yyyy");
+
+  return resevation;
+}

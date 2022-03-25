@@ -8,7 +8,7 @@ import {
   nullable,
   list,
 } from "nexus";
-import { Reservation } from "./Reservation";
+import { formatResevation, Reservation } from "./Reservation";
 import { format } from "date-fns";
 
 export const Room = objectType({
@@ -29,10 +29,18 @@ export const RoomQuery = extendType({
   definition: (t) => {
     t.nullable.list.field("getRooms", {
       type: "Room",
-      resolve: (source, args, context) => {
-        return context.db.room.findMany({
+      resolve: async (source, args, context) => {
+        let rooms = await context.db.room.findMany({
           include: { reservations: true },
         });
+
+        let formatRoom = rooms;
+        formatRoom.map((room: any) =>
+          room.reservations.map((reservation: any) => {
+            formatResevation(reservation);
+          })
+        );
+        return formatRoom;
       },
     });
     t.nullable.field("getRoom", {
@@ -40,8 +48,8 @@ export const RoomQuery = extendType({
       args: {
         id: nonNull(intArg()),
       },
-      resolve: (source, args, context) => {
-        let room = context.db.room.findFirst({
+      resolve: async (source, args, context) => {
+        let room = await context.db.room.findFirst({
           where: { id: args.id },
           include: { reservations: true },
         });
@@ -49,12 +57,12 @@ export const RoomQuery = extendType({
         if (!room) {
           throw new Error("Could not find room with id " + args.id);
         }
+
         let formatDate = room;
-        console.log(formatDate.reservations.dateFrom);
-        formatDate.reservations.dateFrom = format(
-          formatDate.reservations.dateFrom,
-          "dd/MM/yyyy"
-        );
+        formatDate.reservations.map((reservation: any) => {
+          formatResevation(reservation);
+        });
+
         return formatDate;
       },
     });
