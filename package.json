@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --transpile-only --no-notify src/index.ts",
     "start-db": "docker-compose -f Db/docker-postgres.yml up",
+    "migrate-db": "npx prisma migrate dev",
     "build": "tsc"
   },
   "keywords": [],
