@@ -3,7 +3,7 @@
 
 
 type Mutation {
-  createResevation(dateFrom: String!, dateTo: String!, roomId: Int!, userId: Int!): Reservation
+  createReservation(dateFrom: String!, dateTo: String!, roomId: Int!, userId: Int!): Reservation
   createRoom(minibar: Boolean!, numOfBeds: Int!, oceanView: Boolean!, pricePerNight: Float!, roomNumber: Int!): Room
   createUser(email: String!, firstName: String!, lastName: String!, role: role!): User!
   deleteRoom(id: Int!): Room!
@@ -35,7 +35,7 @@ type Room {
   numOfBeds: Int!
   oceanView: Boolean!
   pricePerNight: Float!
-  resevations: [Reservation]
+  reservations: [Reservation]
   roomNumber: Int!
 }
 
@@ -44,6 +44,7 @@ type User {
   firstName: String!
   id: Int!
   lastName: String!
+  reservations: [Reservation]
   role: role!
 }
 

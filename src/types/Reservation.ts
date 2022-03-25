@@ -53,7 +53,7 @@ export const ReservationQuery = extendType({
 export const ReservationMutation = extendType({
   type: "Mutation",
   definition: (t) => {
-    t.nullable.field("createResevation", {
+    t.nullable.field("createReservation", {
       type: "Reservation",
       args: {
         userId: nonNull(intArg()),
@@ -62,25 +62,38 @@ export const ReservationMutation = extendType({
         dateTo: nonNull(stringArg()),
       },
       async resolve(source, args, context) {
-        const tempResevation = {
+        const tempReservation = {
           dateFrom: parse(args.dateFrom, "dd/MM/yyyy", new Date()),
           dateTo: parse(args.dateTo, "dd/MM/yyyy", new Date()),
           roomId: args.roomId,
           userId: args.userId,
         };
 
-        console.log(tempResevation);
+        console.log(tempReservation);
 
         let reservation = context.db.reservation.create({
-          data: tempResevation,
+          data: tempReservation,
         });
 
-        context.db.reservation.update({
+        context.db.room.update({
           where: {
             id: args.roomId,
           },
           data: {
-            Reservation: {
+            reservations: {
+              connect: {
+                id: reservation.id,
+              },
+            },
+          },
+        });
+
+        context.db.user.update({
+          where: {
+            id: args.userId,
+          },
+          data: {
+            reservations: {
               connect: {
                 id: reservation.id,
               },

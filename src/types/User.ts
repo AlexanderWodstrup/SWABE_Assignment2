@@ -10,6 +10,7 @@ import {
   arg,
   nullable,
 } from "nexus";
+import { Reservation } from "./Reservation";
 
 export const Role = enumType({
   name: "role",
@@ -28,6 +29,7 @@ export const User = objectType({
     t.nonNull.string("lastName");
     t.nonNull.string("email");
     t.nonNull.field("role", { type: Role });
+    t.nullable.list.field("reservations", { type: Reservation });
   },
 });
 
@@ -37,7 +39,9 @@ export const UserQuery = extendType({
     t.nullable.list.field("getUsers", {
       type: "User",
       resolve: (source, args, context) => {
-        return context.db.user.findMany();
+        return context.db.user.findMany({
+          include: { reservations: true },
+        });
       },
     });
     t.nullable.field("getUser", {
@@ -46,7 +50,10 @@ export const UserQuery = extendType({
         userId: nonNull(intArg()),
       },
       resolve: (source, args, context) => {
-        let user = context.db.user.findFirst({ where: { id: args.userId } });
+        let user = context.db.user.findFirst({
+          where: { id: args.userId },
+          include: { reservations: true },
+        });
 
         if (!user) {
           throw new Error("Could not find user with id " + args.userId);
