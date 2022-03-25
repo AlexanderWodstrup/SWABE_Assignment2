@@ -70,7 +70,25 @@ export const ReservationMutation = extendType({
         };
 
         console.log(tempResevation);
-        return context.db.reservation.create({ data: tempResevation });
+
+        let reservation = context.db.reservation.create({
+          data: tempResevation,
+        });
+
+        context.db.reservation.update({
+          where: {
+            id: args.roomId,
+          },
+          data: {
+            Reservation: {
+              connect: {
+                id: reservation.id,
+              },
+            },
+          },
+        });
+
+        return reservation;
       },
     });
   },
