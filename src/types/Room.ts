@@ -59,7 +59,7 @@ export const RoomMutation = extendType({
         oceanView: nonNull(booleanArg()),
         minibar: nonNull(booleanArg()),
       },
-      resolve(source, args, context) {
+      async resolve(source, args, context) {
         const tempRoom = {
           roomNumber: args.roomNumber,
           numOfBeds: args.numOfBeds,
@@ -67,6 +67,14 @@ export const RoomMutation = extendType({
           oceanView: args.oceanView,
           minibar: args.minibar,
         };
+
+        let roomExist = await context.db.room.findFirst({
+          where: { roomNumber: args.roomNumber },
+        });
+
+        if (roomExist) {
+          throw new Error("Room already exist");
+        }
 
         return context.db.Room.create({ data: tempRoom });
       },
@@ -81,7 +89,7 @@ export const RoomMutation = extendType({
         oceanView: nullable(booleanArg()),
         minibar: nullable(booleanArg()),
       },
-      resolve(source, args, context) {
+      async resolve(source, args, context) {
         const tempRoom = {
           roomNumber: args.roomNumber,
           numOfBeds: args.numOfBeds,
@@ -89,6 +97,14 @@ export const RoomMutation = extendType({
           oceanView: args.oceanView,
           minibar: args.minibar,
         };
+
+        let roomExist = await context.db.room.findFirst({
+          where: { id: args.id },
+        });
+
+        if (!roomExist) {
+          throw new Error("Room not found. id: " + args.id);
+        }
 
         return context.db.Room.update({
           where: { id: args.id },
@@ -101,7 +117,15 @@ export const RoomMutation = extendType({
       args: {
         id: nonNull(intArg()),
       },
-      resolve(source, args, context) {
+      async resolve(source, args, context) {
+        let roomExist = await context.db.room.findFirst({
+          where: { id: args.id },
+        });
+
+        if (!roomExist) {
+          throw new Error("Room not found. id: " + args.id);
+        }
+
         return context.db.room.delete({ where: { id: args.id } });
       },
     });
