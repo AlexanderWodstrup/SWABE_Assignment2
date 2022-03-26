@@ -8,7 +8,15 @@ import {
   nullable,
   stringArg,
 } from "nexus";
-import { format, parse } from "date-fns";
+import { format, parse, areIntervalsOverlapping } from "date-fns";
+
+type ReservationType = {
+  id: Number;
+  dateFrom: Date;
+  dateTo: Date;
+  roomId: Number;
+  userId: Number;
+};
 
 export const Reservation = objectType({
   name: "Reservation",
@@ -78,6 +86,25 @@ export const ReservationMutation = extendType({
           roomId: args.roomId,
           userId: args.userId,
         };
+
+        let room = await context.db.room.findFirst({
+          where: { id: tempReservation.roomId },
+          include: { reservations: true },
+        });
+
+        room.reservations.map((reservation: ReservationType) => {
+          let intervalLeft = {
+            start: reservation.dateFrom,
+            end: reservation.dateTo,
+          };
+          let intervalRight = {
+            start: tempReservation.dateFrom,
+            end: tempReservation.dateTo,
+          };
+          if (areIntervalsOverlapping(intervalLeft, intervalRight)) {
+            throw new Error("Resevations are overlapping");
+          }
+        });
 
         let reservation = await context.db.reservation.create({
           data: tempReservation,
@@ -171,7 +198,6 @@ export const ReservationMutation = extendType({
 });
 
 export function formatResevation(resevation: any) {
-  console.log(resevation);
   resevation.dateFrom = format(resevation.dateFrom, "dd/MM/yyyy");
   resevation.dateTo = format(resevation.dateTo, "dd/MM/yyyy");
 
